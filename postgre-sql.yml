@@ -1,0 +1,80 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.3.1
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    io.kubernetes.cri-o.ContainerType/pg-podman: container
+    io.kubernetes.cri-o.ContainerType/pgadmin-podman: container
+    io.kubernetes.cri-o.SandboxID/pg-podman: e274382fcab0142efdb7f4ce88ccdeeeb8642ef9a55fde4c07c113deb70b6f7
+    io.kubernetes.cri-o.SandboxID/pgadmin-podman: e274382fcab0142efdb7f4ce88ccdeeeb8642ef9a55fde4c07c113deb70b6f7
+    io.kubernetes.cri-o.TTY/pg-podman: "false"
+    io.kubernetes.cri-o.TTY/pgadmin-podman: "false"
+    io.podman.annotations.autoremove/pg-podman: "FALSE"
+    io.podman.annotations.autoremove/pgadmin-podman: "FALSE"
+    io.podman.annotations.init/pg-podman: "FALSE"
+    io.podman.annotations.init/pgadmin-podman: "FALSE"
+    io.podman.annotations.privileged/pg-podman: "FALSE"
+    io.podman.annotations.privileged/pgadmin-podman: "FALSE"
+    io.podman.annotations.publish-all/pg-podman: "FALSE"
+    io.podman.annotations.publish-all/pgadmin-podman: "FALSE"
+  creationTimestamp: "2023-07-18T01:38:53Z"
+  labels:
+    app: postgre-sql
+  name: postgre-sql
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - env:
+    - name: PGADMIN_DEFAULT_PASSWORD
+      value: "1234567"
+    - name: PGADMIN_DEFAULT_EMAIL
+      value: me@example.com
+    image: docker.io/dpage/pgadmin4:latest
+    name: pgadmin-podman
+    ports:
+    - containerPort: 80
+      hostPort: 9876
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+    volumeMounts:
+    - mountPath: /var/lib/pgadmin
+      name: 95393dbc1bbe69a85ba2584838090c362e64410f6e58a33410154e2043a20ecb-pvc
+  - args:
+    - postgres
+    env:
+    - name: POSTGRES_PASSWORD
+      value: "1234567"
+    - name: POSTGRES_DB
+      value: mydatabase
+    image: docker.io/library/postgres:14-alpine
+    name: pg-podman
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - CAP_MKNOD
+        - CAP_NET_RAW
+        - CAP_AUDIT_WRITE
+    volumeMounts:
+    - mountPath: /var/lib/postgresql/data
+      name: 003953712fa563702b89a0d88fcd3531e7e4f10d689d6b62354167610a84d3ba-pvc
+  enableServiceLinks: false
+  hostname: postgre-sql
+  restartPolicy: Never
+  volumes:
+  - name: 95393dbc1bbe69a85ba2584838090c362e64410f6e58a33410154e2043a20ecb-pvc
+    persistentVolumeClaim:
+      claimName: 95393dbc1bbe69a85ba2584838090c362e64410f6e58a33410154e2043a20ecb
+  - name: 003953712fa563702b89a0d88fcd3531e7e4f10d689d6b62354167610a84d3ba-pvc
+    persistentVolumeClaim:
+      claimName: 003953712fa563702b89a0d88fcd3531e7e4f10d689d6b62354167610a84d3ba
+status: {}
+
